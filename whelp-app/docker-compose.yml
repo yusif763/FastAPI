@@ -1,0 +1,61 @@
+version: '3.1'
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    hostname: rabbitmq
+    volumes:
+      - ./rabbitmq/etc/definitions.json:/etc/rabbitmq/definitions.json
+      - ./rabbitmq/etc/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+      - ./rabbitmq/data:/var/lib/rabbitmq/mnesia/rabbit@my-rabbit
+      - ./rabbitmq/logs:/var/log/rabbitmq/log
+    ports:
+      - 5672:5672
+
+  celery:
+    build:
+      context: .
+      dockerfile: celery.dockerfile
+    links:
+      - "rabbitmq"
+    depends_on:
+      - "rabbitmq"
+    env_file: .env
+
+  db:
+    image: mysql:5.7
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=123
+      - MYSQL_DATABASE=test_db
+    volumes:
+      - ./mydb:/var/lib/mysql
+      
+  adminer:
+    image: adminer:4.7.8
+    restart: always
+    ports:
+      - 8080:8080
+    
+  web:
+    build: .
+    restart: always
+    environment:
+        - RABBITMQ_HOST=rabbitmq
+        - RABBITMQ_USERNAME=guest
+        - RABBITMQ_PASSWORD=guest
+        - RABBITMQ_PORT=5672
+        - MYSQL_ROOT_PASSWORD=123
+        - MYSQL_DATABASE=test_db
+    depends_on:
+      - db
+    ports:
+        - 8000:8000
+
+  
+networks:
+  default:
+    external:
+      name: whelp
