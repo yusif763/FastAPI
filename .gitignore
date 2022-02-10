@@ -1,0 +1,8 @@
+__pycache__
+.DS_STORE
+venv
+env
+.venv
+.vscode
+mydb
+rabbitmq
