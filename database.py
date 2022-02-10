@@ -10,7 +10,12 @@ password = os.environ.get("DATABASE_PASSWORD",'123')
 port = os.environ.get("PORT",3306)
 PROD = os.environ.get("PROD")
 
-db = peewee.MySQLDatabase(DATABASE_NAME, **{"charset":"utf8","sql_mode":"PIPES_AS_CONCAT","user":'root', "password":password,
-                        "host":'db',"port":3306,"use_unicode":True})
+if PROD:
+    db = peewee.MySQLDatabase(DATABASE_NAME, **{"charset":"utf8","sql_mode":"PIPES_AS_CONCAT","user":'root', "password":password,
+                            "host":'db',"port":3306,"use_unicode":True})
+else:  
+    db = peewee.MySQLDatabase(DATABASE_NAME, **{"charset":"utf8","sql_mode":"PIPES_AS_CONCAT","user":'root', "password":password,
+                        "port":3306,"use_unicode":True})
+
 
 

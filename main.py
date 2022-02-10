@@ -6,7 +6,6 @@ from models.user_model import User
 from models.task_model import Task
 
 
-
 db.connect()
 db.create_tables([User,Task])
 db.close()

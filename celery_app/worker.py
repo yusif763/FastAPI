@@ -12,8 +12,15 @@ RABBITMQ_PASSWORD = os.environ.get('RABBITMQ_PASSWORD')
 RABBITMQ_PORT = os.environ.get('RABBITMQ_PORT')
 PROD = os.environ.get('PROD')
 
-celery = Celery(
-    "whelp-app",  broker = f"amqp://{RABBITMQ_USERNAME}:{RABBITMQ_PASSWORD}@{RABBITMQ_HOST}:5672")
+
+if PROD:
+    celery = Celery(
+            "whelp-app",  broker = f"amqp://{RABBITMQ_USERNAME}:{RABBITMQ_PASSWORD}@{RABBITMQ_HOST}:5672")
+else:
+     celery = Celery(
+        "whelp-app", broker="pyamqp://localhost:5672"
+    )
+
 
 
 celery_log = get_task_logger(__name__)
